@@ -4,5 +4,6 @@
 #include "geo.h"
 using namespace geo;
 namespace input {
-	std::vector<Trajectory> readdata();
+	std::vector<Trajectory> readtraindata();
+	std::vector<std::pair<std::string, double>> readquerydata();
 }
