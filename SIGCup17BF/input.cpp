@@ -1,14 +1,6 @@
 #include "input.h"
 
 namespace input {
-#if 0
-	std::string datapath = "C:\\Users\\zyr17\\Documents\\Lab\\SIGSPATIAL 2017\\Datas\\dataset-sample\\files\\";
-#else
-	std::string datapath = "D:\\Documents\\Lab\\SIGSPATIAL 2017\\dataset-sample\\files";
-#endif
-	std::string inputfilename = "dataset.txt";
-	std::string inputqueryname = "queries.txt";
-
 	Trajectory readtrajectory(std::string filename){
 		Trajectory traj(filename);
 		std::vector<Point> trajdata;
