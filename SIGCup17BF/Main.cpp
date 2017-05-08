@@ -15,7 +15,8 @@ int main() {
 		FILE *f = fopen((input::datapath + "\\results\\" + buffer).c_str(), "w");
 		auto res3 = query::onequery(res2[i]);
 		for (auto &i : res3)
-			fprintf(f, "%s\n", query::traj[i].name);
+			fprintf(f, "%s\n", query::traj[i].name.c_str());
 		fclose(f);
 	}
+	//getchar();
 }
