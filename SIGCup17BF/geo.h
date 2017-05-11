@@ -4,6 +4,12 @@
 #include <cmath>
 namespace geo {
 	const double EPS = 1e-10;
+	struct fur {
+		int a, b, c;
+		double d;
+		fur() {}
+		fur(int a, int b, int c, double d) : a(a), b(b), c(c), d(d) {}
+	};
 	struct Point {
 		double x, y;
 		Point() {}
