@@ -4,6 +4,7 @@
 #include "geo.h"
 #include "input.h"
 #include "query.h"
+#include "graphics.h"
 
 int main() {
 	auto res = input::readtraindata();
@@ -24,12 +25,17 @@ int main() {
 		fclose(f);
 	}
 	*/
+	int maxtime = 0;
 	for (int i = 0; i < 10000; i++) {
 		if (i % 100 == 0) printf("doing %d\n", i);
 		int r = rand();
 		double k = 600000 / 65536 * r;
 		int x = rand() % query::traj.size(), y = rand() % query::traj.size();
 		query::frechetdistancevalid_dfs(query::traj[x], query::traj[y], k);
+		if (query::dfsnum[i].c > maxtime) {
+			maxtime = query::dfsnum[i].c;
+			graphics::drawdistancepicture(query::traj[x], query::traj[y], k, "");
+		}
 	}
 	std::sort(query::dfsnum.begin(), query::dfsnum.end(), [](fur x, fur y) { return x.c * 1. / (x.a + x.b) < y.c * 1. / (y.a + y.b); });
 	for (int ii = 0; ii < query::dfsnum.size(); ) {
@@ -38,6 +44,10 @@ int main() {
 		if (ii < 9900) ii += 100;
 		else ii++;
 	}
+	auto i = query::dfsnum.size() - 1;
+	//auto drawres = graphics::drawdistancepicture(query::traj[querynum[i].first], query::traj[querynum[i].second], query::dfsnum[i].d, "C:\\Users\\zyr17\\Documents\\Lab\\SIGSPATIAL 2017\\a.png");
+	
+	//printf("%d %d\n", query::traj[querynum[i].first].data.size(), query::traj[querynum[i].second].data.size());
 	//for (auto i : query::dfsnum)
 	//	printf("%d %d %d %f\n", i.a, i.b, i.c, i.d);
 	getchar();
