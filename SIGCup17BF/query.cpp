@@ -2,18 +2,26 @@
 namespace query{
 	std::vector<Trajectory> traj;
 
-	std::pair<double, double> getminvalidpos(Point startpoint, Point endpoint, Point refrencepoint, double k)
+	std::pair<double, double> getminvalidpos(geo::Point startpoint, geo::Point endpoint, geo::Point refrencepoint, double k)
 	{
-		Point pj = proj(startpoint, endpoint, refrencepoint);
+		geo::Point pj = proj(startpoint, endpoint, refrencepoint);
 		double mindis2 = (pj - refrencepoint).len2();
 		if (mindis2 > k * k) return std::make_pair(1e100, 0);
 		double dlength = sqrt(k * k - mindis2);
 		double midpos = (pj - startpoint).len();
+		double revpos = (pj - endpoint).len();
 		double totlength = (endpoint - startpoint).len();
 		dlength /= totlength;
 		midpos /= totlength;
-		//printf("%f %f %f %f\n", mindis2, k, midpos - dlength, midpos + dlength);
-		return std::make_pair(midpos - dlength, midpos + dlength);
+		revpos /= totlength;
+		if (midpos + revpos > 1 - EPS && revpos > midpos)
+			midpos *= -1;
+		//printf("%f %f %f %f [%f %f] %f %f\n", startpoint.x, startpoint.y, endpoint.x, endpoint.y, refrencepoint.x, refrencepoint.y, pj.x, pj.y);
+		//printf("%f %f\n", midpos, dlength);
+		double left = midpos - dlength, right = midpos + dlength;
+		if (left > 1 || right < 0)
+			return std::make_pair(1e100, 0);
+		return std::make_pair(left < 0 ? 0 : left, right > 1 ? 1 : right);
 	}
 
 	bool frechetdistancevalid(Trajectory x, Trajectory y, double distance) {
@@ -79,20 +87,22 @@ namespace query{
 		totalnum++;
 		std::pair<double, double> horizontal = getminvalidpos(x[i], x[i + 1], y[j + 1], distance);
 		std::pair<double, double> vertical = getminvalidpos(y[j], y[j + 1], x[i + 1], distance);
-		double pastdown = down[i][j + 1];
+		double pastdown = down[i][j + 1] > 1 ? 1 + EPS : down[i][j + 1];
 		if (left[i][j] < 1 + EPS || down[i][j] <= horizontal.first)
 			down[i][j + 1] = horizontal.first;
 		else if (down[i][j] <= horizontal.second + EPS)
 			down[i][j + 1] = down[i][j];
 		if (down[i][j + 1] < pastdown - EPS)
 			dfsmain(i, j + 1, totalnum, n, m, left, down, x, y, distance);
-		double pastleft = left[i + 1][j];
+		else down[i][j + 1] = pastdown;
+		double pastleft = left[i + 1][j] > 1 ? 1 + EPS : left[i + 1][j];
 		if (down[i][j] < 1 + EPS || left[i][j] <= vertical.first)
 			left[i + 1][j] = vertical.first;
 		else if (left[i][j] <= vertical.second + EPS)
 			left[i + 1][j] = left[i][j];
 		if (left[i + 1][j] < pastleft - EPS)
 			dfsmain(i + 1, j, totalnum, n, m, left, down, x, y, distance);
+		else left[i + 1][j] = pastleft;
 	}
 
 	double discretefrechetdiatance(Trajectory x, Trajectory y){

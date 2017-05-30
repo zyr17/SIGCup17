@@ -13,8 +13,19 @@ while True:
 		if point[1] == point[3] and point[1] == point[5] and point[1] == point[7]:
 			continue
 	point = [[point[1], point[0]], [point[3], point[2]], [point[5], point[4]], [point[7], point[6]]]
-	print 'draw', point
+	#print 'draw', point
 	cv2.fillConvexPoly(img, np.array(point, 'int32'), (0, 0, 255))
+cv2.fillConvexPoly(img, np.array([[0, 0], [0, 29], [m, 29], [m, 0]], 'int32'), (255, 255, 255))
+cv2.fillConvexPoly(img, np.array([[0, 0], [29, 0], [29, n], [0, n]], 'int32'), (255, 255, 255))
+for i in xrange(1, n / 30):
+	for j in xrange(1, m / 30):
+		FF = [[0, 0], [0, 1], [1, 0], [0, - 1], [- 1, 0]]
+		for x, y in FF:
+			x += i * 30
+			y += j * 30
+			if x < 0 or x >= n or y < 0 or y >= m:
+				continue
+			img[x][y] = [0, 0, 0]
 
 #print img.shape
 #cv2.fillConvexPoly(img, np.array([[9930, 6270], [9960, 6240], [9930, 6240], [9930, 6240]], 'int32'), (0, 0, 255))

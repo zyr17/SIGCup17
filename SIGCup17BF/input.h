@@ -11,15 +11,17 @@ namespace input {
 		Query(Trajectory traj, double k) : traj(traj), k(k){}
 	};
 	const int BUFFER_LENGTH = 100;
-#if 1
-#if 1
-	const std::string datapath = "C:\\Users\\zyr17\\Documents\\Lab\\SIGSPATIAL 2017\\Datas\\dataset-sample\\files\\";
+#ifdef VS2017
+	const std::string dataprev = "C:\\Users\\zyr17\\Documents\\Lab\\SIGSPATIAL 2017\\Datas\\dataset-sample\\files\\";
 #else
-	const std::string datapath = "C:\\Users\\zyr17\\Documents\\Lab\\SIGSPATIAL 2017\\Datas\\naivedata\\";
+	const std::string dataprev = "C:\\Now Using\\Lab\\data\\";
 #endif
+#if 1
+	const std::string dataname = "dataset-sample\\files";
 #else
-	const std::string datapath = "D:\\Documents\\Lab\\SIGSPATIAL 2017\\dataset-sample\\files";
+	const std::string dataname = "naivedata";
 #endif
+	const std::string datapath = dataprev + dataname;
 	const std::string inputfilename = "dataset.txt";
 	const std::string inputqueryname = "queries.txt";
 
