@@ -80,12 +80,14 @@
   <ItemGroup>
     <ClInclude Include="geo.h" />
     <ClInclude Include="graphics.h" />
+    <ClInclude Include="index.h" />
     <ClInclude Include="input.h" />
     <ClInclude Include="query.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="geo.cpp" />
     <ClCompile Include="graphics.cpp" />
+    <ClCompile Include="index.cpp" />
     <ClCompile Include="input.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="query.cpp" />

@@ -124,12 +124,14 @@ namespace query{
 		return d[n - 1][m - 1];
 	}
 	std::vector<int> onequery(Query q) {
-		std::vector<int> res;
-		for (int i = 0; i < traj.size(); i++) {
+		std::vector<int> res, checklist;
+		index::search(q, checklist, res);
+		for (auto i : checklist) {
 			//printf("%d: ", i);
 			//if (discretefrechetdiatance(q.traj, traj[i]) <= q.k)
 			bool a = frechetdistancevalid(q.traj, traj[i], q.k);
 			bool another = frechetdistancevalid_dfs(q.traj, traj[i], q.k);
+			assert(a == another);
 			if (a) {
 				res.push_back(i);
 			}

@@ -1,7 +1,9 @@
 #pragma once
+#include <assert.h>
 #include <vector>
 #include "geo.h"
 #include "input.h"
+#include "index.h"
 using namespace geo;
 using namespace input;
 namespace query{
