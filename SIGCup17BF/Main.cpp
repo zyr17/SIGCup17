@@ -28,8 +28,7 @@ int main() {
 			graphics::drawdistancepicture(res2[i].traj, query::traj[res3[0]], res2[i].k, "");
 		}
 	}
-	*/
-	
+	/*
 	int maxtime = 0;
 	for (int i = 0; i < 10000; i++) {
 		if (i % 100 == 0) printf("doing %d\n", i);

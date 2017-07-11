@@ -12,7 +12,7 @@ namespace input {
 	};
 	const int BUFFER_LENGTH = 100;
 #ifdef VS2017
-	const std::string dataprev = "C:\\Users\\zyr17\\Documents\\Lab\\SIGSPATIAL 2017\\Datas\\dataset-sample\\files\\";
+	const std::string dataprev = "C:\\Users\\zyr17\\Documents\\Lab\\SIGSPATIAL 2017\\Datas\\";
 #else
 	const std::string dataprev = "C:\\Now Using\\Lab\\data\\";
 #endif
