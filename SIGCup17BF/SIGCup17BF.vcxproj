@@ -82,6 +82,7 @@
     <ClInclude Include="graphics.h" />
     <ClInclude Include="index.h" />
     <ClInclude Include="input.h" />
+    <ClInclude Include="kdtree.h" />
     <ClInclude Include="query.h" />
   </ItemGroup>
   <ItemGroup>
@@ -89,6 +90,7 @@
     <ClCompile Include="graphics.cpp" />
     <ClCompile Include="index.cpp" />
     <ClCompile Include="input.cpp" />
+    <ClCompile Include="kdtree.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="query.cpp" />
   </ItemGroup>

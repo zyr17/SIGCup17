@@ -1,6 +1,7 @@
 #include "query.h"
 namespace query{
 	std::vector<Trajectory> traj;
+	kdt::twod_tree starttree, endtree;
 
 	std::pair<double, double> getminvalidpos(geo::Point startpoint, geo::Point endpoint, geo::Point refrencepoint, double k)
 	{
@@ -135,7 +136,7 @@ namespace query{
 	}
 	std::vector<int> onequery(Query q) {
 		std::vector<int> res, checklist;
-		index::search(q, checklist, res);
+		index::search(q, starttree, endtree, checklist, res);
 		for (auto i : checklist) {
 			//printf("%d: ", i);
 			//if (discretefrechetdiatance(q.traj, traj[i]) <= q.k)

@@ -14,6 +14,7 @@ int main() {
 	//printf("%d\n%s %f %d\n%s %f %d\n", res2.size(), res2[0].traj.name.c_str(), res2[0].k, res2[0].traj.data.size(), res2[1].traj.name.c_str(), res2[1].k, res2[1].traj.data.size());
 	//getchar();
 	query::traj = res;
+	index::makeindex(res, query::starttree, query::endtree);
 	
 	for (int i = 0; i < res2.size(); i++){
 		char buffer[input::BUFFER_LENGTH];

@@ -4,11 +4,13 @@
 #include "geo.h"
 #include "input.h"
 #include "index.h"
+#include "kdtree.h"
 using namespace geo;
 using namespace input;
 namespace query{
 	extern std::vector<Trajectory> traj;
 	extern std::vector<fur> dfsnum;
+	extern kdt::twod_tree starttree, endtree;
 	std::pair<double, double> getminvalidpos(Point startpoint, Point endpoint, Point refrencepoint, double k);
 	bool frechetdistancevalid(Trajectory x, Trajectory y, double distance);
 	bool frechetdistancevalid_dfs(Trajectory x, Trajectory y, double distance);
