@@ -140,10 +140,10 @@ namespace query{
 		for (auto i : checklist) {
 			//printf("%d: ", i);
 			//if (discretefrechetdiatance(q.traj, traj[i]) <= q.k)
-			bool a = frechetdistancevalid(q.traj, traj[i], q.k);
+			//bool a = frechetdistancevalid(q.traj, traj[i], q.k);
 			bool another = frechetdistancevalid_dfs(q.traj, traj[i], q.k);
-			assert(a == another);
-			if (a) {
+			//assert(a == another);
+			if (another) {
 				res.push_back(i);
 			}
 		}
