@@ -8,13 +8,28 @@ namespace input {
 	std::string inputfilename;
 	std::string inputqueryname;
 
-	void getconfig()
+	void getconfig(std::string path)
 	{
-		dataprev = "C:/Users/zyr17/Documents/Lab/SIGSPATIAL 2017/Datas/";
-		dataname = "naive-sample";
-		datapath = dataprev + dataname;
-		inputfilename = "files/dataset.txt";
-		inputqueryname = "files/queries.txt";
+		FILE *f = fopen(path.c_str(), "r");
+		char buffer[BUFFER_LENGTH] = { 0 };
+		fgets(buffer, BUFFER_LENGTH, f);
+		if (buffer[strlen(buffer) - 1] < 33)
+			buffer[strlen(buffer) - 1] = 0;
+		dataprev = buffer;
+		fgets(buffer, BUFFER_LENGTH, f);
+		if (buffer[strlen(buffer) - 1] < 33)
+			buffer[strlen(buffer) - 1] = 0;
+		dataname = buffer;
+		datapath = dataprev + "/" + dataname;
+		fgets(buffer, BUFFER_LENGTH, f);
+		if (buffer[strlen(buffer) - 1] < 33)
+			buffer[strlen(buffer) - 1] = 0;
+		inputfilename = buffer;
+		fgets(buffer, BUFFER_LENGTH, f);
+		if (buffer[strlen(buffer) - 1] < 33)
+			buffer[strlen(buffer) - 1] = 0;
+		inputqueryname = buffer;
+		fclose(f);
 	}
 
 	Trajectory readtrajectory(std::string filename){
