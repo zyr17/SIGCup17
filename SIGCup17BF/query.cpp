@@ -68,11 +68,13 @@ namespace query{
 		std::vector<std::vector<double>> left, down;
 		left.resize(n);
 		down.resize(n);
-		for (int i = 0; i < n; i++)
+		for (int i = 0; i < n; i++) {
+			left[i].resize(m);
+			down[i].resize(m);
 			for (int j = 0; j < m; j++) {
-				left[i].push_back(1e100);
-				down[i].push_back(1e100);
+				left[i][j] = down[i][j] = 1e100;
 			}
+		}
 		left[0][0] = down[0][0] = 0;
 		int totalnum = 0;
 		dfsmain(0, 0, totalnum, n, m, left, down, x, y, distance);
