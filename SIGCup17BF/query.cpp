@@ -93,7 +93,7 @@ namespace query{
 			down[i][j + 1] = horizontal.first;
 		else if (down[i][j] <= horizontal.second + EPS)
 			down[i][j + 1] = down[i][j];
-		if (down[i][j + 1] < pastdown - EPS)
+		if (down[i][j + 1] < pastdown)
 			dfsmain(i, j + 1, totalnum, n, m, left, down, x, y, distance);
 		else down[i][j + 1] = pastdown;
 		double pastleft = left[i + 1][j] > 1 ? 1 + EPS : left[i + 1][j];
@@ -101,7 +101,7 @@ namespace query{
 			left[i + 1][j] = vertical.first;
 		else if (left[i][j] <= vertical.second + EPS)
 			left[i + 1][j] = left[i][j];
-		if (left[i + 1][j] < pastleft - EPS)
+		if (left[i + 1][j] < pastleft)
 			dfsmain(i + 1, j, totalnum, n, m, left, down, x, y, distance);
 		else left[i + 1][j] = pastleft;
 	}
@@ -136,7 +136,7 @@ namespace query{
 	}
 	std::vector<int> onequery(Query q) {
 		std::vector<int> res, checklist;
-		index::search(q, starttree, endtree, checklist, res);
+		Index::search(q, starttree, endtree, checklist, res);
 		for (auto i : checklist) {
 			//printf("%d: ", i);
 			//if (discretefrechetdiatance(q.traj, traj[i]) <= q.k)

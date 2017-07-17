@@ -6,7 +6,8 @@
 #include "query.h"
 #include "graphics.h"
 
-int main() {
+void calcmain() {
+	input::getconfig();
 	auto res = input::readtraindata();
 	srand(unsigned(time(NULL) + clock()));
 	//printf("%d\n%s %d\n%s %d\n", res.size(), res[0].name.c_str(), res[0].data.size(), res[1].name.c_str(), res[1].data.size());
@@ -14,12 +15,12 @@ int main() {
 	//printf("%d\n%s %f %d\n%s %f %d\n", res2.size(), res2[0].traj.name.c_str(), res2[0].k, res2[0].traj.data.size(), res2[1].traj.name.c_str(), res2[1].k, res2[1].traj.data.size());
 	//getchar();
 	query::traj = res;
-	index::makeindex(res, query::starttree, query::endtree);
+	Index::makeindex(res, query::starttree, query::endtree);
 	
 	for (int i = 0; i < res2.size(); i++){
 		char buffer[input::BUFFER_LENGTH];
 		sprintf(buffer, "%04d.txt", i);
-		FILE *f = fopen((input::datapath + "\\results\\" + buffer).c_str(), "w");
+		FILE *f = fopen((input::datapath + "/results/" + buffer).c_str(), "w");
 		auto res3 = query::onequery(res2[i]);
 		for (auto &i : res3)
 			fprintf(f, "%s\n", query::traj[i].name.c_str());
@@ -29,6 +30,7 @@ int main() {
 			graphics::drawdistancepicture(res2[i].traj, query::traj[res3[0]], res2[i].k, "");
 		}
 	}
+	//getchar();
 	/*
 	int maxtime = 0;
 	for (int i = 0; i < 10000; i++) {
@@ -52,8 +54,12 @@ int main() {
 	}
 	
 #ifndef VS2017
-	system("python \"D:\\Documents\\Lab\\SIGSPATIAL 2017\\SIGCup17BF\\SIGCup17BF\\draw.py\"");
+	system("python \"D:/Documents/Lab/SIGSPATIAL 2017/SIGCup17BF/SIGCup17BF/draw.py\"");
 #endif
 	getchar();
 	*/
+}
+
+int main() {
+	calcmain();
 }

@@ -5,7 +5,7 @@ namespace graphics {
 	{
 		geo::Point pj = proj(startpoint, endpoint, refrencepoint);
 		double mindis2 = (pj - refrencepoint).len2();
-		if (mindis2 > k * k) return std::make_pair(1e100, 0);
+		if (mindis2 > k * k) return std::make_pair(1e100, 0.0);
 		double dlength = sqrt(k * k - mindis2);
 		double midpos = (pj - startpoint).len();
 		double revpos = (pj - endpoint).len();
@@ -19,7 +19,7 @@ namespace graphics {
 		//printf("%f %f\n", midpos, dlength);
 		double left = midpos - dlength, right = midpos + dlength;
 		if (left > 1 || right < 0)
-			return std::make_pair(1e100, 0);
+			return std::make_pair(1e100, 0.0);
 		return std::make_pair(left < 0 ? 0 : left, right > 1 ? 1 : right);
 	}
 
@@ -47,8 +47,8 @@ namespace graphics {
 			for (int j =  - 1; j < m - 1; j++) {
 				//if (left[i][j] > 1 + EPS && down[i][j] > 1 + EPS) continue;
 				//printf("%d %d\n", i, j);
-				std::pair<double, double> horizontal = i != - 1 ? getminvalidpos(x[i], x[i + 1], y[j + 1], distance) : std::make_pair(1e100, 0);
-				std::pair<double, double> vertical = j != - 1 ? getminvalidpos(y[j], y[j + 1], x[i + 1], distance) : std::make_pair(1e100, 0);
+				std::pair<double, double> horizontal = i != - 1 ? getminvalidpos(x[i], x[i + 1], y[j + 1], distance) : std::make_pair(1e100, 0.0);
+				std::pair<double, double> vertical = j != - 1 ? getminvalidpos(y[j], y[j + 1], x[i + 1], distance) : std::make_pair(1e100, 0.0);
 				if (i != - 1) drawdis[i][j + 1][0] = horizontal.second >= 0 - EPS ? horizontal.first : 1;
 				drawdis[i + 1][j + 1][2] = horizontal.first <= 1 + EPS ? 1 - horizontal.second : 1;
 				if (j != - 1) drawdis[i + 1][j][1] = vertical.second >= 0 - EPS ? vertical.first : 1;

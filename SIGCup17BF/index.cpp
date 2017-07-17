@@ -1,5 +1,5 @@
 #include "index.h"
-namespace index {
+namespace Index {
 	void makeindex(std::vector<geo::Trajectory> &input, kdt::twod_tree &start, kdt::twod_tree &end)
 	{
 		std::vector<kdt::fpoint> vec;
