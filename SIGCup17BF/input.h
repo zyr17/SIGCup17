@@ -18,7 +18,7 @@ namespace input {
 	extern std::string inputfilename;
 	extern std::string inputqueryname;
 
-	void getconfig();
+	void getconfig(std::string path);
 	Trajectory readtrajectory(std::string filename);
 	std::vector<Trajectory> readtraindata();
 	std::vector<Query> readquerydata();

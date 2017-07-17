@@ -7,7 +7,7 @@
 #include "graphics.h"
 
 void calcmain() {
-	input::getconfig();
+	input::getconfig("C:/Users/zyr17/Documents/Lab/SIGSPATIAL 2017/Datas/data.config");
 	auto res = input::readtraindata();
 	srand(unsigned(time(NULL) + clock()));
 	//printf("%d\n%s %d\n%s %d\n", res.size(), res[0].name.c_str(), res[0].data.size(), res[1].name.c_str(), res[1].data.size());
