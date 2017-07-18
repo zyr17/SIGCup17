@@ -79,12 +79,18 @@ namespace query{
 		int totalnum = 0;
 		dfsmain(0, 0, totalnum, n, m, left, down, x, y, distance);
 		dfsnum.push_back(fur(n, m, totalnum, distance));
-		return left[n - 2][m - 2] <= 1 + EPS || down[n - 2][m - 2] <= 1 + EPS;
+		return left[n - 2][m - 2] < 1 + EPS || down[n - 2][m - 2] < 1 + EPS;
+	}
+
+	void dfsquick(int &totalnum, int n, int m, std::vector<std::vector<double>> &left, std::vector<std::vector<double>> &down, Trajectory &x, Trajectory &y, double distance) {
+		std::vector<std::pair<int, int>> heap;
+		std::vector<int> stage;
+		heap.push_back(std::make_pair(0, 0));
 	}
 
 	void dfsmain(int i, int j, int &totalnum, int n, int m, std::vector<std::vector<double>> &left, std::vector<std::vector<double>> &down, Trajectory &x, Trajectory &y, double distance)
 	{
-		if (left[n - 2][m - 2] <= 1 + EPS || down[n - 2][m - 2] <= 1 + EPS) return;
+		if (left[n - 2][m - 2] < 1 + EPS || down[n - 2][m - 2] < 1 + EPS) return;
 		if (i == n - 2 && j == m - 2) return;
 		if (i > n - 2 || j > m - 2) return;
 		totalnum++;
