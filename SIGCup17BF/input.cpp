@@ -13,21 +13,21 @@ namespace input {
 		FILE *f = fopen(path.c_str(), "r");
 		char buffer[BUFFER_LENGTH] = { 0 };
 		fgets(buffer, BUFFER_LENGTH, f);
-		if (buffer[strlen(buffer) - 1] < 33)
-			buffer[strlen(buffer) - 1] = 0;
+		for (int i = strlen(buffer) - 1; i >= 0 && buffer[i] < 33; i--)
+			buffer[i] = 0;
 		dataprev = buffer;
 		fgets(buffer, BUFFER_LENGTH, f);
-		if (buffer[strlen(buffer) - 1] < 33)
-			buffer[strlen(buffer) - 1] = 0;
+		for (int i = strlen(buffer) - 1; i >= 0 && buffer[i] < 33; i--)
+			buffer[i] = 0;
 		dataname = buffer;
 		datapath = dataprev + "/" + dataname;
 		fgets(buffer, BUFFER_LENGTH, f);
-		if (buffer[strlen(buffer) - 1] < 33)
-			buffer[strlen(buffer) - 1] = 0;
+		for (int i = strlen(buffer) - 1; i >= 0 && buffer[i] < 33; i--)
+			buffer[i] = 0;
 		inputfilename = buffer;
 		fgets(buffer, BUFFER_LENGTH, f);
-		if (buffer[strlen(buffer) - 1] < 33)
-			buffer[strlen(buffer) - 1] = 0;
+		for (int i = strlen(buffer) - 1; i >= 0 && buffer[i] < 33; i--)
+			buffer[i] = 0;
 		inputqueryname = buffer;
 		fclose(f);
 	}
