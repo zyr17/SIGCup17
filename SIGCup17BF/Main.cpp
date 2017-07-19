@@ -26,11 +26,11 @@ void calcmain() {
 			fprintf(f, "%s\n", query::traj[i].name.c_str());
 		fclose(f);
 		if (res3.size()){
-			printf("%s %s %f\n", res2[i].traj.name.c_str(), query::traj[res3[0]].name.c_str(), res2[i].k);
-			graphics::drawdistancepicture(res2[i].traj, query::traj[res3[0]], res2[i].k, "");
+			printf("%d %s %s %f\n", i, res2[i].traj.name.c_str(), query::traj[res3[0]].name.c_str(), res2[i].k);
+			//graphics::drawdistancepicture(res2[i].traj, query::traj[res3[0]], res2[i].k, "");
 		}
 	}
-	//getchar();
+	
 	/*
 	int maxtime = 0;
 	for (int i = 0; i < 10000; i++) {
@@ -52,10 +52,6 @@ void calcmain() {
 		if (ii < 9900) ii += 100;
 		else ii++;
 	}
-	
-#ifndef VS2017
-	system("python \"D:/Documents/Lab/SIGSPATIAL 2017/SIGCup17BF/SIGCup17BF/draw.py\"");
-#endif
 	getchar();
 	*/
 }

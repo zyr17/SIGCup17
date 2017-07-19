@@ -96,8 +96,14 @@ namespace graphics {
 		return left[n - 2][m - 2] <= 1 + EPS || down[n - 2][m - 2] <= 1 + EPS;
 	}
 
-	void dfsmain(int i, int j, int &totalnum, int n, int m, std::vector<std::vector<double>> &left, std::vector<std::vector<double>> &down, Trajectory &x, Trajectory &y, double distance, std::vector<std::vector<int>> &res, FILE *f)
+	void dfsmain(int i, int j, int &totalnum, int n, int m, std::vector<std::vector<double>> &left, std::vector<std::vector<double>> &down, Trajectory &x, Trajectory &y, double distance, std::vector<std::vector<int>> &res, int &topzero)
 	{
+		if ((left[i][j] == 0 || down[i][j] == 0) && i == topzero)
+			topzero++;
+		if (topzero >= n - 1 && i < n - 2) {
+			//printf("early break\n");
+			return;
+		}
 		res[i][j]++;
 		if (left[n - 2][m - 2] <= 1 + EPS || down[n - 2][m - 2] <= 1 + EPS) return;
 		if (i == n - 2 && j == m - 2) return;
@@ -112,7 +118,7 @@ namespace graphics {
 			down[i][j + 1] = down[i][j];
 		if (down[i][j + 1] < pastdown - EPS){
 			//fprintf(f, "%d %d -> %d %d [%f %f]\n", i, j, i, j + 1, down[i][j + 1], pastdown);
-			dfsmain(i, j + 1, totalnum, n, m, left, down, x, y, distance, res, f);
+			dfsmain(i, j + 1, totalnum, n, m, left, down, x, y, distance, res, topzero);
 		}
 		else down[i][j + 1] = pastdown;
 		double pastleft = left[i + 1][j] > 1 ? 1 + EPS : left[i + 1][j];
@@ -122,7 +128,7 @@ namespace graphics {
 			left[i + 1][j] = left[i][j];
 		if (left[i + 1][j] < pastleft - EPS){
 			//fprintf(f, "%d %d -> %d %d [%f %f]\n", i, j, i + 1, j, left[i + 1][j], pastleft);
-			dfsmain(i + 1, j, totalnum, n, m, left, down, x, y, distance, res, f);
+			dfsmain(i + 1, j, totalnum, n, m, left, down, x, y, distance, res, topzero);
 		}
 		else left[i + 1][j] = pastleft;
 	}
@@ -146,9 +152,10 @@ namespace graphics {
 				down[i].push_back(1e100);
 			}
 		left[0][0] = down[0][0] = 0;
-		int totalnum = 0;
+		int totalnum = 0, topzero = 0;
 		FILE *f = fopen("dfsres.txt", "w");
-		dfsmain(0, 0, totalnum, n, m, left, down, x, y, distance, res, f);
+		dfsmain(0, 0, totalnum, n, m, left, down, x, y, distance, res, topzero);
+		fprintf(f, "topzero: %d\n", topzero);
 		for (int i = 0; i < n; i++){
 			for (int j = 0; j < m; j++)
 				fprintf(f, "%d ", res[i][j]);

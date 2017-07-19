@@ -58,6 +58,7 @@ namespace query{
 	}
 
 	std::vector<fur> dfsnum;
+	double dfsleft[MAX_DFS_ARRAY], dfsdown[MAX_DFS_ARRAY];
 	bool frechetdistancevalid_dfs(Trajectory x, Trajectory y, double distance)
 	{
 		int n = x.data.size(), m = y.data.size();
@@ -65,6 +66,7 @@ namespace query{
 			dfsnum.push_back(fur(n, m, 0, distance));
 			return 0;
 		}
+		/*
 		std::vector<std::vector<double>> left, down;
 		left.resize(n);
 		down.resize(n);
@@ -75,21 +77,89 @@ namespace query{
 				left[i][j] = down[i][j] = 1e100;
 			}
 		}
-		left[0][0] = down[0][0] = 0;
-		int totalnum = 0;
-		dfsmain(0, 0, totalnum, n, m, left, down, x, y, distance);
+		*/
+		memset(dfsleft, 0x58, sizeof(double) * n * m);
+		memset(dfsdown, 0x58, sizeof(double) * n * m);
+		dfsleft[0] = dfsdown[0] = 0;
+		int totalnum = 0, topzero = 0;
+		//dfsmain(0, 0, totalnum, n, m, x, y, distance, topzero);
+		dfsquick(totalnum, n, m, x, y, distance);
+		//printf("%s %s\n", x.name.c_str(), y.name.c_str());
+		//getchar();
 		dfsnum.push_back(fur(n, m, totalnum, distance));
-		return left[n - 2][m - 2] < 1 + EPS || down[n - 2][m - 2] < 1 + EPS;
+		return dfsleft[(n - 2) * m + m - 2] < 1 + EPS || dfsdown[(n - 2) * m + m - 2] < 1 + EPS;
 	}
 
-	void dfsquick(int &totalnum, int n, int m, std::vector<std::vector<double>> &left, std::vector<std::vector<double>> &down, Trajectory &x, Trajectory &y, double distance) {
-		std::vector<std::pair<int, int>> heap;
-		std::vector<int> stage;
-		heap.push_back(std::make_pair(0, 0));
+	std::pair<int, int> dfsheap[MAX_DFS_ARRAY];
+	int dfsstage[MAX_DFS_ARRAY];
+	void dfsquick(int &totalnum, int n, int m, Trajectory &x, Trajectory &y, double distance) {
+		int heaptop = 0, topzero = 0;
+		dfsheap[0].first = dfsheap[0].second = dfsstage[0] = 0;
+		for (; heaptop >= 0; ) {
+			int i = dfsheap[heaptop].first, j = dfsheap[heaptop].second;
+
+			if ((dfsleft[i * m + j] == 0 || dfsdown[i * m + j] == 0) && i == topzero)
+				topzero++;
+			if (topzero >= n - 1 && i < n - 2)
+				dfsstage[heaptop] = 2;
+			if (dfsleft[(n - 2) * m + m - 2] < 1 + EPS || dfsdown[(n - 2) * m + m - 2] < 1 + EPS)
+				dfsstage[heaptop] = 2;
+			if (i == n - 2 && j == m - 2)
+				dfsstage[heaptop] = 2;
+			if (i > n - 2 || j > m - 2)
+				dfsstage[heaptop] = 2;
+			totalnum++;
+			//printf("%d %d %d %f %f %d\n", heaptop, i, j, dfsdown[i*m+j], dfsleft[i*m+j], dfsstage[heaptop]);
+
+			if (dfsstage[heaptop] == 0) {
+				dfsstage[heaptop] = 1;
+				std::pair<double, double> horizontal = getminvalidpos(x[i], x[i + 1], y[j + 1], distance);
+				double pastdown = dfsdown[i * m + j + 1] > 1 ? 1 + EPS : dfsdown[i * m + j + 1];
+				if (dfsleft[i * m + j] < 1 + EPS || dfsdown[i * m + j] <= horizontal.first)
+					dfsdown[i * m + j + 1] = horizontal.first;
+				else if (dfsdown[i * m + j] <= horizontal.second + EPS)
+					dfsdown[i * m + j + 1] = dfsdown[i * m + j];
+				if (dfsdown[i * m + j + 1] >= pastdown)
+					dfsdown[i * m + j + 1] = pastdown;
+				else {
+					dfsstage[++heaptop] = 0;
+					dfsheap[heaptop].first = i;
+					dfsheap[heaptop].second = j + 1;
+					continue;
+				}
+			}
+
+			if (dfsstage[heaptop] == 1) {
+				dfsstage[heaptop] = 2;
+				std::pair<double, double> vertical = getminvalidpos(y[j], y[j + 1], x[i + 1], distance);
+				double pastleft = dfsleft[(i + 1) * m + j] > 1 ? 1 + EPS : dfsleft[(i + 1) * m + j];
+				if (dfsdown[i * m + j] < 1 + EPS || dfsleft[i * m + j] <= vertical.first)
+					dfsleft[(i + 1) * m + j] = vertical.first;
+				else if (dfsleft[i * m + j] <= vertical.second + EPS)
+					dfsleft[(i + 1) * m + j] = dfsleft[i * m + j];
+				if (dfsleft[(i + 1) * m + j] >= pastleft)
+					dfsleft[(i + 1) * m + j] = pastleft;
+				else {
+					dfsstage[++heaptop] = 0;
+					dfsheap[heaptop].first = i + 1;
+					dfsheap[heaptop].second = j;
+					continue;
+				}
+			}
+
+			heaptop--;
+
+		}
 	}
 
-	void dfsmain(int i, int j, int &totalnum, int n, int m, std::vector<std::vector<double>> &left, std::vector<std::vector<double>> &down, Trajectory &x, Trajectory &y, double distance)
+	void dfsmain(int i, int j, int &totalnum, int n, int m, std::vector<std::vector<double>> &left, std::vector<std::vector<double>> &down, Trajectory &x, Trajectory &y, double distance, int &topzero)
 	{
+		if ((left[i][j] == 0 || down[i][j] == 0) && i == topzero)
+			topzero++;
+		if (topzero >= n - 1 && i < n - 2) {
+			//printf("early break\n");
+			return;
+		}
 		if (left[n - 2][m - 2] < 1 + EPS || down[n - 2][m - 2] < 1 + EPS) return;
 		if (i == n - 2 && j == m - 2) return;
 		if (i > n - 2 || j > m - 2) return;
@@ -102,7 +172,7 @@ namespace query{
 		else if (down[i][j] <= horizontal.second + EPS)
 			down[i][j + 1] = down[i][j];
 		if (down[i][j + 1] < pastdown)
-			dfsmain(i, j + 1, totalnum, n, m, left, down, x, y, distance);
+			dfsmain(i, j + 1, totalnum, n, m, left, down, x, y, distance, topzero);
 		else down[i][j + 1] = pastdown;
 		double pastleft = left[i + 1][j] > 1 ? 1 + EPS : left[i + 1][j];
 		if (down[i][j] < 1 + EPS || left[i][j] <= vertical.first)
@@ -110,8 +180,40 @@ namespace query{
 		else if (left[i][j] <= vertical.second + EPS)
 			left[i + 1][j] = left[i][j];
 		if (left[i + 1][j] < pastleft)
-			dfsmain(i + 1, j, totalnum, n, m, left, down, x, y, distance);
+			dfsmain(i + 1, j, totalnum, n, m, left, down, x, y, distance, topzero);
 		else left[i + 1][j] = pastleft;
+	}
+
+	void dfsmain(int i, int j, int &totalnum, int n, int m, Trajectory &x, Trajectory &y, double distance, int &topzero)
+	{
+		if ((dfsleft[i * m + j] == 0 || dfsdown[i * m + j] == 0) && i == topzero)
+			topzero++;
+		if (topzero >= n - 1 && i < n - 2) {
+			//printf("early break\n");
+			return;
+		}
+		if (dfsleft[(n - 2) * m + m - 2] < 1 + EPS || dfsdown[(n - 2) * m + m - 2] < 1 + EPS) return;
+		if (i == n - 2 && j == m - 2) return;
+		if (i > n - 2 || j > m - 2) return;
+		totalnum++;
+		std::pair<double, double> horizontal = getminvalidpos(x[i], x[i + 1], y[j + 1], distance);
+		std::pair<double, double> vertical = getminvalidpos(y[j], y[j + 1], x[i + 1], distance);
+		double pastdown = dfsdown[i * m + j + 1] > 1 ? 1 + EPS : dfsdown[i * m + j + 1];
+		if (dfsleft[i * m + j] < 1 + EPS || dfsdown[i * m + j] <= horizontal.first)
+			dfsdown[i * m + j + 1] = horizontal.first;
+		else if (dfsdown[i * m + j] <= horizontal.second + EPS)
+			dfsdown[i * m + j + 1] = dfsdown[i * m + j];
+		if (dfsdown[i * m + j + 1] < pastdown)
+			dfsmain(i, j + 1, totalnum, n, m, x, y, distance, topzero);
+		else dfsdown[i * m + j + 1] = pastdown;
+		double pastleft = dfsleft[(i + 1) * m + j] > 1 ? 1 + EPS : dfsleft[(i + 1) * m + j];
+		if (dfsdown[i * m + j] < 1 + EPS || dfsleft[i * m + j] <= vertical.first)
+			dfsleft[(i + 1) * m + j] = vertical.first;
+		else if (dfsleft[i * m + j] <= vertical.second + EPS)
+			dfsleft[(i + 1) * m + j] = dfsleft[i * m + j];
+		if (dfsleft[(i + 1) * m + j] < pastleft)
+			dfsmain(i + 1, j, totalnum, n, m, x, y, distance, topzero);
+		else dfsleft[(i + 1) * m + j] = pastleft;
 	}
 
 	double discretefrechetdiatance(Trajectory x, Trajectory y){
