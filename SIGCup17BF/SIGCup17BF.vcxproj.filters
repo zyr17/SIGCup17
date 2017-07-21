@@ -33,6 +33,9 @@
     <ClInclude Include="kdtree.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="def.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="input.cpp">

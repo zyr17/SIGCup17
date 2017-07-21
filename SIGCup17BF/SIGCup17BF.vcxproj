@@ -78,6 +78,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="def.h" />
     <ClInclude Include="geo.h" />
     <ClInclude Include="graphics.h" />
     <ClInclude Include="index.h" />

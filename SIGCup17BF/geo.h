@@ -2,6 +2,7 @@
 #include <iostream>
 #include <vector>
 #include <cmath>
+#include "def.h"
 namespace geo {
 	const double EPS = 1e-10;
 	struct fur {

@@ -1,5 +1,6 @@
 #pragma once
 #include "geo.h"
+#include "def.h"
 #include <stdlib.h>
 using namespace geo;
 namespace graphics {

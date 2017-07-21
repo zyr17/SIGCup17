@@ -3,6 +3,7 @@
 #include <vector>
 #include <cstring>
 #include "geo.h"
+#include "def.h"
 using namespace geo;
 namespace input {
 	struct Query{

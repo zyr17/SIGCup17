@@ -6,10 +6,14 @@
 #include "query.h"
 #include "graphics.h"
 
+double dfsleft[query::MAX_DFS_ARRAY], dfsdown[query::MAX_DFS_ARRAY];
+std::pair<int, int> dfsheap[query::MAX_DFS_ARRAY];
+int dfsstage[query::MAX_DFS_ARRAY];
+
 void calcmain() {
 	input::getconfig("C:/Users/zyr17/Documents/Lab/SIGSPATIAL 2017/Datas/data.config");
 	auto res = input::readtraindata();
-	srand(unsigned(time(NULL) + clock()));
+	//srand(unsigned(time(NULL) + clock()));
 	//printf("%d\n%s %d\n%s %d\n", res.size(), res[0].name.c_str(), res[0].data.size(), res[1].name.c_str(), res[1].data.size());
 	auto res2 = input::readquerydata();
 	//printf("%d\n%s %f %d\n%s %f %d\n", res2.size(), res2[0].traj.name.c_str(), res2[0].k, res2[0].traj.data.size(), res2[1].traj.name.c_str(), res2[1].k, res2[1].traj.data.size());
@@ -21,14 +25,17 @@ void calcmain() {
 		char buffer[input::BUFFER_LENGTH];
 		sprintf(buffer, "%04d.txt", i);
 		FILE *f = fopen((input::datapath + "/results/" + buffer).c_str(), "w");
-		auto res3 = query::onequery(res2[i]);
+		auto res3 = query::onequery(res2[i], dfsleft, dfsdown, dfsheap, dfsstage);
 		for (auto &i : res3)
 			fprintf(f, "%s\n", query::traj[i].name.c_str());
 		fclose(f);
+#ifdef DEBUG
+		printf("%d %s %d %f\n", i, res2[i].traj.name.c_str(), res3.size(), res2[i].k);
 		if (res3.size()){
-			printf("%d %s %s %f\n", i, res2[i].traj.name.c_str(), query::traj[res3[0]].name.c_str(), res2[i].k);
+			//printf("draw %s\n", query::traj[res3[0]].name.c_str());
 			//graphics::drawdistancepicture(res2[i].traj, query::traj[res3[0]], res2[i].k, "");
 		}
+#endif
 	}
 	
 	/*
