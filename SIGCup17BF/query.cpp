@@ -59,7 +59,7 @@ namespace query{
 #ifdef DEBUG
 	std::vector<fur> dfsnum;
 #endif
-	bool frechetdistancevalid_dfs(Trajectory x, Trajectory y, double distance, double *dfsleft, double *dfsdown, std::pair<int ,int> *dfsheap, int *dfsstage)
+	bool frechetdistancevalid_dfs(Trajectory x, Trajectory y, double distance, double *dfsleft, double *dfsdown, std::pair<int ,int> *dfsheap, int *dfsstage, char *dfsleftchar, char * dfsdownchar, int *dfsclearsize)
 	{
 		int n = x.data.size(), m = y.data.size();
 		if ((x[0] - y[0]).len() > distance + EPS || (x[n - 1] - y[m - 1]).len() > distance + EPS) {
@@ -80,31 +80,56 @@ namespace query{
 			}
 		}
 		*/
-		memset(dfsleft, 0x58, sizeof(double) * n * m);
-		memset(dfsdown, 0x58, sizeof(double) * n * m);
-		dfsleft[0] = dfsdown[0] = 0;
+		if (*dfsclearsize < n * m)
+			*dfsclearsize = n * m;
+		if (dfsleftchar[0] == 0x7f) {
+			memset(dfsleftchar, 0, sizeof(char) * *dfsclearsize);
+			memset(dfsdownchar, 0, sizeof(char) * *dfsclearsize);
+			*dfsclearsize = n * m;
+		}
+		//memset(dfsleft, 0x58, sizeof(double) * n * m);
+		//memset(dfsdown, 0x58, sizeof(double) * n * m);
 		int totalnum = 0, topzero = 0;
 		//dfsmain(0, 0, totalnum, n, m, x, y, distance, topzero);
-		dfsquick(totalnum, n, m, dfsleft, dfsdown, dfsheap, dfsstage, x, y, distance);
+		dfsquick(totalnum, n, m, dfsleft, dfsdown, dfsheap, dfsstage, dfsleftchar, dfsdownchar, x, y, distance);
 		//printf("%s %s\n", x.name.c_str(), y.name.c_str());
 		//getchar();
 #ifdef DEBUG
 		dfsnum.push_back(fur(n, m, totalnum, distance));
 #endif
-		return dfsleft[(n - 2) * m + m - 2] < 1 + EPS || dfsdown[(n - 2) * m + m - 2] < 1 + EPS;
+		return dfsleftchar[(n - 2) * m + m - 2] == dfsleftchar[0] && dfsleft[(n - 2) * m + m - 2] < 1 + EPS || dfsdownchar[(n - 2) * m + m - 2] == dfsleftchar[0] && dfsdown[(n - 2) * m + m - 2] < 1 + EPS;
 	}
 
-	void dfsquick(int &totalnum, int n, int m, double *dfsleft, double *dfsdown, std::pair<int, int> *dfsheap, int *dfsstage, Trajectory &x, Trajectory &y, double distance) {
-		int heaptop = 0, topzero = 0;
+	void dfsquick(int &totalnum, int n, int m, double *dfsleft, double *dfsdown, std::pair<int, int> *dfsheap, int *dfsstage, char *dfsleftchar, char *dfsdownchar, Trajectory &x, Trajectory &y, double distance) {
+		int heaptop = 0, topzero = 0, nowchar = dfsleftchar[0] + 1;
 		dfsheap[0].first = dfsheap[0].second = dfsstage[0] = 0;
+		dfsleft[0] = dfsdown[0] = 0;
+		dfsleftchar[0] = dfsdownchar[0] = nowchar;
+		bool disconnecttest = 1;
 		for (; heaptop >= 0; ) {
 			int i = dfsheap[heaptop].first, j = dfsheap[heaptop].second;
 
+			if (dfsleftchar[i * m + j] != nowchar) {
+				dfsleftchar[i * m + j] = nowchar;
+				dfsleft[i * m + j] = 1e100;
+			}
+			if (dfsdownchar[i * m + j] != nowchar) {
+				dfsdownchar[i * m + j] = nowchar;
+				dfsdown[i * m + j] = 1e100;
+			}
+			if (dfsleftchar[(i + 1) * m + j] != nowchar) {
+				dfsleftchar[(i + 1) * m + j] = nowchar;
+				dfsleft[(i + 1) * m + j] = 1e100;
+			}
+			if (dfsdownchar[i * m + j + 1] != nowchar) {
+				dfsdownchar[i * m + j + 1] = nowchar;
+				dfsdown[i * m + j + 1] = 1e100;
+			}
 			if ((dfsleft[i * m + j] == 0 || dfsdown[i * m + j] == 0) && i == topzero)
 				topzero++;
 			if (topzero >= n - 1 && i < n - 2)
 				dfsstage[heaptop] = 2;
-			if (dfsleft[(n - 2) * m + m - 2] < 1 + EPS || dfsdown[(n - 2) * m + m - 2] < 1 + EPS)
+			if (dfsleftchar[(n - 2) * m + m - 2] == nowchar && dfsleft[(n - 2) * m + m - 2] < 1 + EPS || dfsdownchar[(n - 2) * m + m - 2] == nowchar && dfsdown[(n - 2) * m + m - 2] < 1 + EPS)
 				dfsstage[heaptop] = 2;
 			if (i == n - 2 && j == m - 2)
 				dfsstage[heaptop] = 2;
@@ -248,14 +273,14 @@ namespace query{
 		//getchar();
 		return d[n - 1][m - 1];
 	}
-	std::vector<int> onequery(Query q, double *dfsleft, double *dfsdown, std::pair<int, int> *dfsheap, int *dfsstage) {
+	std::vector<int> onequery(Query q, double *dfsleft, double *dfsdown, std::pair<int, int> *dfsheap, int *dfsstage, char *dfsleftchar, char *dfsdownchar, int *dfsclearsize) {
 		std::vector<int> res, checklist;
 		Index::search(q, starttree, endtree, checklist, res);
 		for (auto i : checklist) {
 			//printf("%d: ", i);
 			//if (discretefrechetdiatance(q.traj, traj[i]) <= q.k)
 			//bool a = frechetdistancevalid(q.traj, traj[i], q.k);
-			bool another = frechetdistancevalid_dfs(q.traj, traj[i], q.k, dfsleft, dfsdown, dfsheap, dfsstage);
+			bool another = frechetdistancevalid_dfs(q.traj, traj[i], q.k, dfsleft, dfsdown, dfsheap, dfsstage, dfsleftchar, dfsdownchar, dfsclearsize);
 			//assert(a == another);
 			if (another) {
 				res.push_back(i);

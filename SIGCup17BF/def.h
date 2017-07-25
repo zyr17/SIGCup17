@@ -1,2 +1,3 @@
 #pragma once
-#define DEBUG
+//#define DEBUG
+//#define USE_PTHREAD
