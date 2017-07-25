@@ -16,9 +16,13 @@ namespace query{
 #endif
 	extern kdt::twod_tree starttree, endtree;
 	std::pair<double, double> getminvalidpos(Point startpoint, Point endpoint, Point refrencepoint, double k);
+
+	//deprecated
 	bool frechetdistancevalid(Trajectory x, Trajectory y, double distance);
-	bool frechetdistancevalid_dfs(Trajectory x, Trajectory y, double distance, double *dfsleft, double *dfsdown, std::pair<int, int> *dfsheap, int *dfsstage, char *dfsleftchar, char *dfsdownchar, int *dfsclearsize);
-	void dfsquick(int &totalnum, int n, int m, double *dfsleft, double *dfsdown, std::pair<int, int> *dfsheap, int *dfsstage, char *dfsleftchar, char *dfsdownchar, Trajectory &x, Trajectory &y, double distance);
+
+	bool frechetdistancevalid_dfs(Trajectory x, Trajectory y, double distance, double *dfsleft, double *dfsdown, std::pair<int, int> *dfsheap, int *dfsstage, char *dfsleftchar, char *dfsdownchar, int *dfsclearsize, char *dfspoint);
+	void dfsquick(int &totalnum, double *dfsleft, double *dfsdown, std::pair<int, int> *dfsheap, int *dfsstage, char *dfsleftchar, char *dfsdownchar, char *dfspoint, Trajectory &x, Trajectory &y, double distance);
+	bool dfsdisconnect(int &totalnum, std::pair<int, int> *dfsheap, int *dfsstage, char *dfspoint, Trajectory &x, Trajectory &y, double distance);
 
 	//deprecated
 	void dfsmain(int i, int j, int &totalnum, int n, int m, std::vector<std::vector<double>> &left, std::vector<std::vector<double>> &down, Trajectory &x, Trajectory &y, double distance, int &topzero);
@@ -27,5 +31,5 @@ namespace query{
 	void dfsmain(int i, int j, int &totalnum, int n, int m, double *dfsleft, double *dfsdown, Trajectory &x, Trajectory &y, double distance, int &topzero);
 
 	double discretefrechetdiatance(Trajectory x, Trajectory y);
-	std::vector<int> onequery(Query query, double *dfsleft, double *dfsdown, std::pair<int, int> *dfsheap, int *dfsstage, char *dfsleftchar, char *dfsdownchar, int *dfsclearsize);
+	std::vector<int> onequery(Query query, double *dfsleft, double *dfsdown, std::pair<int, int> *dfsheap, int *dfsstage, char *dfsleftchar, char *dfsdownchar, int *dfsclearsize, char *dfspoint);
 }

@@ -10,7 +10,7 @@
 double **dfsleft, **dfsdown;
 std::pair<int, int> **dfsheap;
 int **dfsstage;
-char **dfsleftchar, **dfsdownchar;
+char **dfsleftchar, **dfsdownchar, **dfspoint;
 int *dfsclearsize;
 
 #ifdef USE_PTHREAD
@@ -40,7 +40,7 @@ void* consume(void* arg) {
 		sprintf(buffer, "%04d.txt", i);
 		printf("%d %lld\n", i, arrayid);
 		FILE *f = fopen((input::datapath + "/results/" + buffer).c_str(), "w");
-		auto res3 = query::onequery(queryres[i], dfsleft[arrayid], dfsdown[arrayid], dfsheap[arrayid], dfsstage[arrayid]);
+		auto res3 = query::onequery(queryres[i], dfsleft[arrayid], dfsdown[arrayid], dfsheap[arrayid], dfsstage[arrayid], dfsleftchar[arrayid], dfsdownchar[arrayid], dfsclearsize + arrayid, dfspoint[arrayid]);
 		for (auto &i : res3)
 			fprintf(f, "%s\n", query::traj[i].name.c_str());
 		fclose(f);
@@ -68,6 +68,7 @@ void calcmain() {
 	dfsstage = new int*[THREADS];
 	dfsleftchar = new char*[THREADS];
 	dfsdownchar = new char*[THREADS];
+	dfspoint = new char*[THREADS];
 	dfsclearsize = new int[THREADS];
 	memset(dfsclearsize, 0, sizeof(int) * THREADS);
 
@@ -78,8 +79,10 @@ void calcmain() {
 		dfsstage[i] = new int[query::MAX_DFS_ARRAY];
 		dfsleftchar[i] = new char[query::MAX_DFS_ARRAY];
 		dfsdownchar[i] = new char[query::MAX_DFS_ARRAY];
+		dfspoint[i] = new char[query::MAX_DFS_ARRAY];
 		memset(dfsleftchar[i], 0, sizeof(char) * query::MAX_DFS_ARRAY);
 		memset(dfsdownchar[i], 0, sizeof(char) * query::MAX_DFS_ARRAY);
+		memset(dfspoint[i], 0, sizeof(char) * query::MAX_DFS_ARRAY);
 	}
 
 #ifdef USE_PTHREAD
@@ -110,7 +113,7 @@ void calcmain() {
 		sprintf(buffer, "%04d.txt", i);
 		FILE *f = fopen((input::datapath + "/results/" + buffer).c_str(), "w");
 		int threadnum = omp_get_thread_num();
-		auto res3 = query::onequery(res2[i], dfsleft[threadnum], dfsdown[threadnum], dfsheap[threadnum], dfsstage[threadnum], dfsleftchar[threadnum], dfsdownchar[threadnum], dfsclearsize + threadnum);
+		auto res3 = query::onequery(res2[i], dfsleft[threadnum], dfsdown[threadnum], dfsheap[threadnum], dfsstage[threadnum], dfsleftchar[threadnum], dfsdownchar[threadnum], dfsclearsize + threadnum, dfspoint[threadnum]);
 		for (auto &i : res3)
 			fprintf(f, "%s\n", query::traj[i].name.c_str());
 		fclose(f);
@@ -129,6 +132,10 @@ void calcmain() {
 	std::sort(query::dfsnum.begin(), query::dfsnum.end(), [](fur x, fur y) {return x.c < y.c; });
 	for (int i = 0; i < query::dfsnum.size(); i += query::dfsnum.size() / 1000)
 		printf("%d %d %d %d\n", query::dfsnum[i].c / (query::dfsnum[i].a + query::dfsnum[i].b), query::dfsnum[i].a, query::dfsnum[i].b, query::dfsnum[i].c);
+	long long tot = 0;
+	for (auto i : query::dfsnum)
+		tot += i.c;
+	printf("total: %lld\n", tot);
 	getchar();
 #endif
 

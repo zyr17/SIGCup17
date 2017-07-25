@@ -1,4 +1,5 @@
 #include "query.h"
+#include "graphics.h"
 namespace query{
 	std::vector<Trajectory> traj;
 	kdt::twod_tree starttree, endtree;
@@ -25,6 +26,7 @@ namespace query{
 		return std::make_pair(left < 0 ? 0 : left, right > 1 ? 1 : right);
 	}
 
+	//deprecated
 	bool frechetdistancevalid(Trajectory x, Trajectory y, double distance) {
 		int n = x.data.size(), m = y.data.size();
 		if ((x[0] - y[0]).len() > distance + EPS || (x[n - 1] - y[m - 1]).len() > distance + EPS)
@@ -59,7 +61,7 @@ namespace query{
 #ifdef DEBUG
 	std::vector<fur> dfsnum;
 #endif
-	bool frechetdistancevalid_dfs(Trajectory x, Trajectory y, double distance, double *dfsleft, double *dfsdown, std::pair<int ,int> *dfsheap, int *dfsstage, char *dfsleftchar, char * dfsdownchar, int *dfsclearsize)
+	bool frechetdistancevalid_dfs(Trajectory x, Trajectory y, double distance, double *dfsleft, double *dfsdown, std::pair<int ,int> *dfsheap, int *dfsstage, char *dfsleftchar, char *dfsdownchar, int *dfsclearsize, char *dfspoint)
 	{
 		int n = x.data.size(), m = y.data.size();
 		if ((x[0] - y[0]).len() > distance + EPS || (x[n - 1] - y[m - 1]).len() > distance + EPS) {
@@ -83,24 +85,33 @@ namespace query{
 		if (*dfsclearsize < n * m)
 			*dfsclearsize = n * m;
 		if (dfsleftchar[0] == 0x7f) {
-			memset(dfsleftchar, 0, sizeof(char) * *dfsclearsize);
-			memset(dfsdownchar, 0, sizeof(char) * *dfsclearsize);
+			memset(dfsleftchar, 0, sizeof(char) * *dfsclearsize * 2);
+			memset(dfsdownchar, 0, sizeof(char) * *dfsclearsize * 2);
+			memset(dfspoint, 0, sizeof(char) * *dfsclearsize * 2);
 			*dfsclearsize = n * m;
 		}
 		//memset(dfsleft, 0x58, sizeof(double) * n * m);
 		//memset(dfsdown, 0x58, sizeof(double) * n * m);
 		int totalnum = 0, topzero = 0;
 		//dfsmain(0, 0, totalnum, n, m, x, y, distance, topzero);
-		dfsquick(totalnum, n, m, dfsleft, dfsdown, dfsheap, dfsstage, dfsleftchar, dfsdownchar, x, y, distance);
+		dfsquick(totalnum, dfsleft, dfsdown, dfsheap, dfsstage, dfsleftchar, dfsdownchar, dfspoint, x, y, distance);
 		//printf("%s %s\n", x.name.c_str(), y.name.c_str());
 		//getchar();
 #ifdef DEBUG
 		dfsnum.push_back(fur(n, m, totalnum, distance));
 #endif
+
+		/*if (totalnum * 1. / (n + m) > 50){
+			graphics::drawdistancepicture(x, y, distance, "");
+			printf("fail\n");
+			getchar();
+		}*/
+
 		return dfsleftchar[(n - 2) * m + m - 2] == dfsleftchar[0] && dfsleft[(n - 2) * m + m - 2] < 1 + EPS || dfsdownchar[(n - 2) * m + m - 2] == dfsleftchar[0] && dfsdown[(n - 2) * m + m - 2] < 1 + EPS;
 	}
 
-	void dfsquick(int &totalnum, int n, int m, double *dfsleft, double *dfsdown, std::pair<int, int> *dfsheap, int *dfsstage, char *dfsleftchar, char *dfsdownchar, Trajectory &x, Trajectory &y, double distance) {
+	void dfsquick(int &totalnum, double *dfsleft, double *dfsdown, std::pair<int, int> *dfsheap, int *dfsstage, char *dfsleftchar, char *dfsdownchar, char *dfspoint, Trajectory &x, Trajectory &y, double distance) {
+		int n = x.data.size(), m = y.data.size();
 		int heaptop = 0, topzero = 0, nowchar = dfsleftchar[0] + 1;
 		dfsheap[0].first = dfsheap[0].second = dfsstage[0] = 0;
 		dfsleft[0] = dfsdown[0] = 0;
@@ -141,6 +152,18 @@ namespace query{
 			if (dfsstage[heaptop] == 0) {
 				dfsstage[heaptop] = 1;
 				std::pair<double, double> horizontal = getminvalidpos(x[i], x[i + 1], y[j + 1], distance);
+
+				if (i == 0 && disconnecttest && horizontal.first == 1e100) {
+					disconnecttest = 0;
+					dfsheap[n * m].first = i;
+					dfsheap[n * m].second = j + 1;
+					dfsstage[n * m] = 0;
+					dfspoint[i * m + j + 1] = nowchar;
+					if (dfsdisconnect(totalnum, dfsheap + n * m, dfsstage + n * m, dfspoint, x, y, distance)) {
+						topzero = n - 1;
+					}
+				}
+
 				double pastdown = dfsdown[i * m + j + 1] > 1 ? 1 + EPS : dfsdown[i * m + j + 1];
 				if (dfsleft[i * m + j] < 1 + EPS || dfsdown[i * m + j] <= horizontal.first)
 					dfsdown[i * m + j + 1] = horizontal.first;
@@ -159,6 +182,18 @@ namespace query{
 			if (dfsstage[heaptop] == 1) {
 				dfsstage[heaptop] = 2;
 				std::pair<double, double> vertical = getminvalidpos(y[j], y[j + 1], x[i + 1], distance);
+
+				if (j == m - 2 && disconnecttest && vertical.first == 1e100) {
+					disconnecttest = 0;
+					dfsheap[n * m].first = i + 1;
+					dfsheap[n * m].second = j;
+					dfsstage[n * m] = 0;
+					dfspoint[(i + 1) * m + j] = nowchar;
+					if (dfsdisconnect(totalnum, dfsheap + n * m, dfsstage + n * m, dfspoint, x, y, distance)) {
+						topzero = n - 1;
+					}
+				}
+
 				double pastleft = dfsleft[(i + 1) * m + j] > 1 ? 1 + EPS : dfsleft[(i + 1) * m + j];
 				if (dfsdown[i * m + j] < 1 + EPS || dfsleft[i * m + j] <= vertical.first)
 					dfsleft[(i + 1) * m + j] = vertical.first;
@@ -177,6 +212,73 @@ namespace query{
 			heaptop--;
 
 		}
+	}
+
+	bool dfsdisconnect(int &totalnum, std::pair<int, int> *dfsheap, int *dfsstage, char *dfspoint, Trajectory &x, Trajectory &y, double distance){
+		return 0;
+		int n = x.data.size(), m = y.data.size();
+		char nowchar = dfspoint[dfsheap[0].first * m + dfsheap[0].second];
+		int heaptop = 0, time = (n + m) * 2;
+		for (; heaptop >= 0; ){
+			int i = dfsheap[heaptop].first, j = dfsheap[heaptop].second;
+			if (i == n - 1 || j == 0) return 1;
+			if (!--time){
+				return 0;
+			}
+			totalnum++;
+			if (dfsstage[heaptop] == 0){
+				dfsstage[heaptop] = 1;
+				std::pair<double, double> p = getminvalidpos(y[j - 1], y[j], x[i], distance);
+				if (p.first == 1e100 && dfspoint[i * m + j - 1] != nowchar){
+					dfspoint[i * m + j - 1] = nowchar;
+					dfsstage[++heaptop] = 0;
+					dfsheap[heaptop].first = i;
+					dfsheap[heaptop].second = j - 1;
+					continue;
+				}
+			}
+			if (dfsstage[heaptop] == 1){
+				dfsstage[heaptop] = 2;
+				std::pair<double, double> p = getminvalidpos(x[i], x[i + 1], y[j], distance);
+				if (p.first == 1e100 && dfspoint[(i + 1) * m + j] != nowchar){
+					dfspoint[(i + 1) * m + j] = nowchar;
+					dfsstage[++heaptop] = 0;
+					dfsheap[heaptop].first = i + 1;
+					dfsheap[heaptop].second = j;
+					continue;
+				}
+			}
+			if (dfsstage[heaptop] == 2){
+				dfsstage[heaptop] = 3;
+				if (i){
+					std::pair<double, double> p = getminvalidpos(x[i - 1], x[i], y[j], distance);
+					if (p.first == 1e100 && dfspoint[(i - 1) * m + j] != nowchar) {
+						dfspoint[(i - 1) * m + j] = nowchar;
+						dfsstage[++heaptop] = 0;
+						dfsheap[heaptop].first = i - 1;
+						dfsheap[heaptop].second = j;
+						continue;
+					}
+				}
+			}
+			if (dfsstage[heaptop] == 3){
+				dfsstage[heaptop] = 4;
+				if (j < m - 1){
+					std::pair<double, double> p = getminvalidpos(y[j], y[j + 1], x[i], distance);
+					if (p.first == 1e100 && dfspoint[i * m + j + 1] != nowchar) {
+						dfspoint[i * m + j + 1] = nowchar;
+						dfsstage[++heaptop] = 0;
+						dfsheap[heaptop].first = i;
+						dfsheap[heaptop].second = j + 1;
+						continue;
+					}
+				}
+			}
+
+			heaptop--;
+
+		}
+		return 0;
 	}
 
 	//deprecated
@@ -273,14 +375,14 @@ namespace query{
 		//getchar();
 		return d[n - 1][m - 1];
 	}
-	std::vector<int> onequery(Query q, double *dfsleft, double *dfsdown, std::pair<int, int> *dfsheap, int *dfsstage, char *dfsleftchar, char *dfsdownchar, int *dfsclearsize) {
+	std::vector<int> onequery(Query q, double *dfsleft, double *dfsdown, std::pair<int, int> *dfsheap, int *dfsstage, char *dfsleftchar, char *dfsdownchar, int *dfsclearsize, char *dfspoint) {
 		std::vector<int> res, checklist;
 		Index::search(q, starttree, endtree, checklist, res);
 		for (auto i : checklist) {
 			//printf("%d: ", i);
 			//if (discretefrechetdiatance(q.traj, traj[i]) <= q.k)
 			//bool a = frechetdistancevalid(q.traj, traj[i], q.k);
-			bool another = frechetdistancevalid_dfs(q.traj, traj[i], q.k, dfsleft, dfsdown, dfsheap, dfsstage, dfsleftchar, dfsdownchar, dfsclearsize);
+			bool another = frechetdistancevalid_dfs(q.traj, traj[i], q.k, dfsleft, dfsdown, dfsheap, dfsstage, dfsleftchar, dfsdownchar, dfsclearsize, dfspoint);
 			//assert(a == another);
 			if (another) {
 				res.push_back(i);
