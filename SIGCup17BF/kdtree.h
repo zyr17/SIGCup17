@@ -1,5 +1,6 @@
 #pragma once
 #include "def.h"
+#include <cmath>
 #include <vector>
 #include <algorithm>
 
