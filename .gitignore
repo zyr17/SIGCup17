@@ -260,5 +260,5 @@ paket-files/
 __pycache__/
 *.pyc
 
-*.txt
-*.png
+!/SIGCup17BF/sample-data/files/
+!/SIGCup17BF/sample-data/results/
