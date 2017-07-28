@@ -1,3 +1,3 @@
 #pragma once
 //#define DEBUG
-//#define USE_PTHREAD
+#define USE_PTHREAD

@@ -49,7 +49,7 @@ void* consume(void* arg){
 #endif
 
 void calcmain(){
-	input::getconfig("C:/Users/zyr17/Documents/Lab/SIGSPATIAL 2017/Datas/data.config");
+	input::getconfig("data.config");
 	auto res = input::readtraindata();
 	auto res2 = input::readquerydata();
 	query::traj = res;

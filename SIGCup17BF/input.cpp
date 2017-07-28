@@ -117,7 +117,6 @@ namespace input{
 
 		traj.data = trajdata;
 		IOerror = 0;
-		if (trajdata.size() == 0) while (true);
 		fclose(inputdata);
 		return traj;
 	}
