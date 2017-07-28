@@ -81,7 +81,6 @@
   <ItemGroup>
     <ClInclude Include="def.h" />
     <ClInclude Include="geo.h" />
-    <ClInclude Include="graphics.h" />
     <ClInclude Include="index.h" />
     <ClInclude Include="input.h" />
     <ClInclude Include="kdtree.h" />
@@ -89,7 +88,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="geo.cpp" />
-    <ClCompile Include="graphics.cpp" />
     <ClCompile Include="index.cpp" />
     <ClCompile Include="input.cpp" />
     <ClCompile Include="kdtree.cpp" />

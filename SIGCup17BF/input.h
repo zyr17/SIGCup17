@@ -5,7 +5,7 @@
 #include "geo.h"
 #include "def.h"
 using namespace geo;
-namespace input {
+namespace input{
 	struct Query{
 		double k;
 		Trajectory traj;
@@ -13,8 +13,6 @@ namespace input {
 		Query(Trajectory traj, double k) : traj(traj), k(k){}
 	};
 	const int BUFFER_LENGTH = 100;
-	extern std::string dataprev;
-	extern std::string dataname;
 	extern std::string datapath;
 	extern std::string inputfilename;
 	extern std::string inputqueryname;

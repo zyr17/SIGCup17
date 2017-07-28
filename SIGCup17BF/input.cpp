@@ -1,26 +1,24 @@
 #include "input.h"
 
 
-namespace fastIO {
+namespace fastIO{
 #define BUF_SIZE 100000
 #define OUT_SIZE 100000
 #define ll long long
-	//fread->read
 	bool IOerror = 0;
 
-	inline char nc(FILE* filename) {
+	inline char nc(FILE* filename){
 		static char buf[BUF_SIZE], *p1 = buf + BUF_SIZE, *pend = buf + BUF_SIZE;
-		if (p1 == pend) {
+		if (p1 == pend){
 			p1 = buf; pend = buf + fread(buf, 1, BUF_SIZE, filename);
 			if (pend == p1) { IOerror = 1; return -1; }
-			//{printf("IO error!\n");system("pause");for (;;);exit(0);}
 		}
 		return *p1++;
 	}
 
 	inline bool blank(char ch) { return ch == ' ' || ch == '\n' || ch == '\r' || ch == '\t'; }
 
-	inline bool read(int &x, FILE* filename) {
+	inline bool read(int &x, FILE* filename){
 		bool sign = 0; char ch = nc(filename); x = 0;
 		for (; blank(ch); ch = nc(filename));
 		if (IOerror)return false;
@@ -30,13 +28,13 @@ namespace fastIO {
 		return true;
 	}
 
-	inline bool read(double &x, FILE* filename) {
+	inline bool read(double &x, FILE* filename){
 		bool sign = 0; char ch = nc(filename); x = 0;
 		for (; blank(ch); ch = nc(filename));
 		if (IOerror)return false;
 		if (ch == '-')sign = 1, ch = nc(filename);
 		for (; ch >= '0'&&ch <= '9'; ch = nc(filename))x = x * 10 + ch - '0';
-		if (ch == '.') {
+		if (ch == '.'){
 			double tmp = 1; ch = nc(filename);
 			for (; ch >= '0'&&ch <= '9'; ch = nc(filename))tmp /= 10.0, x += tmp*(ch - '0');
 		}
@@ -44,7 +42,7 @@ namespace fastIO {
 		return true;
 	}
 
-	inline bool read(char *s, FILE* filename) {
+	inline bool read(char *s, FILE* filename){
 		char ch = nc(filename);
 		for (; blank(ch); ch = nc(filename));
 		if (IOerror)return false;
@@ -53,13 +51,13 @@ namespace fastIO {
 		return true;
 	}
 
-	struct Ostream_fwrite {
+	struct Ostream_fwrite{
 		char *buf, *p1, *pend;
 
 		Ostream_fwrite() { buf = new char[BUF_SIZE]; p1 = buf; pend = buf + BUF_SIZE; }
 
-		void out(char ch, FILE* filename) {
-			if (p1 == pend) {
+		void out(char ch, FILE* filename){
+			if (p1 == pend){
 				fwrite(buf, 1, BUF_SIZE, filename); p1 = buf;
 			}
 			*p1++ = ch;
@@ -82,10 +80,8 @@ namespace fastIO {
 
 using namespace fastIO;
 
-namespace input {
+namespace input{
 
-	std::string dataprev;
-	std::string dataname;
 	std::string datapath;
 	std::string inputfilename;
 	std::string inputqueryname;
@@ -97,12 +93,7 @@ namespace input {
 		fgets(buffer, BUFFER_LENGTH, f);
 		for (int i = strlen(buffer) - 1; i >= 0 && buffer[i] < 33; i--)
 			buffer[i] = 0;
-		dataprev = buffer;
-		fgets(buffer, BUFFER_LENGTH, f);
-		for (int i = strlen(buffer) - 1; i >= 0 && buffer[i] < 33; i--)
-			buffer[i] = 0;
-		dataname = buffer;
-		datapath = dataprev + "/" + dataname;
+		datapath = buffer;
 		fgets(buffer, BUFFER_LENGTH, f);
 		for (int i = strlen(buffer) - 1; i >= 0 && buffer[i] < 33; i--)
 			buffer[i] = 0;
@@ -114,7 +105,7 @@ namespace input {
 		fclose(f);
 	}
 
-	Trajectory readtrajectory(std::string filename) {
+	Trajectory readtrajectory(std::string filename){
 		Trajectory traj(filename);
 		std::vector<Point> trajdata;
 		FILE *inputdata = fopen((datapath + "/" + filename).c_str(), "r");
@@ -122,26 +113,27 @@ namespace input {
 		fgets(buffer, BUFFER_LENGTH, inputdata);
 		double t1, t2, t3, t4;
 		while (read(t1, inputdata) && read(t2, inputdata) && read(t3, inputdata) && read(t4, inputdata))
-		//while (~fscanf(inputdata, "%lf%lf%lf%lf", &t1, &t2, &t3, &t4))
 			trajdata.push_back(Point(t1, t2));
 
 		traj.data = trajdata;
 		IOerror = 0;
-		//std::cout << ' ' << datapath << '/' << filename << ' ' << traj.name << ' ' << trajdata.size() << std::endl;
 		if (trajdata.size() == 0) while (true);
 		fclose(inputdata);
 		return traj;
 	}
 
-	std::vector<Trajectory> readtraindata() {
+	std::vector<Trajectory> readtraindata(){
 		FILE *inputlist = fopen((datapath + "/" + inputfilename).c_str(), "r");
+#ifdef DEBUG
 		FILE *out = fopen((datapath + "/results/dataset.txt").c_str(), "w");
+#endif
 		std::vector<Trajectory> res;
 		char buffer[BUFFER_LENGTH];
 		int count = 0;
-		for (; fgets(buffer, BUFFER_LENGTH, inputlist) != NULL;) {
+		for (; fgets(buffer, BUFFER_LENGTH, inputlist) != NULL;){
+#ifdef DEBUG
 			fprintf(out, "%s", buffer);
-			//println(buffer, out);
+#endif
 			if (buffer[strlen(buffer) - 1] < 33)
 				buffer[strlen(buffer) - 1] = 0;
 			if (buffer[0] == 0) continue;
@@ -150,27 +142,31 @@ namespace input {
 			if (count % 1000 == 0) printf("%d read done\n", count);
 		}
 		fclose(inputlist);
+#ifdef DEBUG
 		fclose(out);
+#endif
 		return res;
 	}
 
-	std::vector<Query> readquerydata() {
+	std::vector<Query> readquerydata(){
 		std::vector<Query> res;
-		//printf("Query\n");
-		//cout << datapath << ' ' << inputqueryname << endl;
 		FILE *inputlist = fopen((datapath + "/" + inputqueryname).c_str(), "r");
+#ifdef DEBUG
 		FILE *out = fopen((datapath + "/results/queries.txt").c_str(), "w");
+#endif
 		char buffer[BUFFER_LENGTH];
 		double maxdistance;
-		//while (read(buffer, inputlist) && read(maxdistance, inputlist)) {
-		while (~fscanf(inputlist, "%s%lf", buffer, &maxdistance)) {
-			//printf("%s %lf\n", buffer, maxdistance);
+		while (~fscanf(inputlist, "%s%lf", buffer, &maxdistance)){
 			if (buffer[0] == 0) continue;
+#ifdef DEBUG
 			fprintf(out, "%s %lf\n", buffer, maxdistance);
+#endif
 			res.push_back(Query(readtrajectory(buffer), maxdistance));
 		}
 		fclose(inputlist);
+#ifdef DEBUG
 		fclose(out);
+#endif
 		return res;
 	}
 }

@@ -1,5 +1,5 @@
 #include "index.h"
-namespace Index {
+namespace Index{
 	void makeindex(std::vector<geo::Trajectory> &input, kdt::twod_tree &start, kdt::twod_tree &end)
 	{
 		std::vector<kdt::fpoint> vec;
@@ -19,8 +19,8 @@ namespace Index {
 		std::sort(res1.begin(), res1.end());
 		std::sort(res2.begin(), res2.end());
 		int p1 = 0, p2 = 0;
-		for (; p1 < res1.size() && p2 < res2.size(); ) {
-			if (res1[p1] == res2[p2]) {
+		for (; p1 < res1.size() && p2 < res2.size(); ){
+			if (res1[p1] == res2[p2]){
 				checklist.push_back(res1[p1]);
 				p1++;
 				p2++;

@@ -4,28 +4,31 @@
 #include <vector>
 #include <algorithm>
 
-//#define DEBUG_KDT
-//#define KDT_N
+namespace kdt{
 
-namespace kdt {
 
-	struct fpoint {
+	struct fpoint{
+
 		double x, y;
 		int id;
 		fpoint() {}
 		fpoint(double x, double y) : x(x), y(y) {}
 		fpoint(double x, double y, int z) : x(x), y(y), id(z) {}
-		fpoint operator- (const fpoint &b) {
+		fpoint operator- (const fpoint &b){
+
 			return fpoint(x - b.x, y - b.y);
 		}
-		inline double len2() {
+		inline double len2(){
+
 			return x * x + y * y;
 		}
-		inline double len() {
+		inline double len(){
+
 			return sqrt(len2());
 		}
 	};
-	class twod_tree {
+	class twod_tree{
+
 
 	private:
 		std::vector<fpoint> points;
