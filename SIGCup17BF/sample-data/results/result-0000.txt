@@ -1,6 +1,0 @@
-files/file-000000.dat
-files/file-000002.dat
-files/file-000003.dat
-files/file-000005.dat
-files/file-000007.dat
-files/file-000008.dat
