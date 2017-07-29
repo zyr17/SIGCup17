@@ -8,4 +8,4 @@ Run the program:
 	In "def.h", define DEBUG can output some debug datas; define USE_PTHREAD will use pthreads. If USE_PTHREAD not defined, the program will use OpenMP.
 	
 Central idea:
-	Obviously, two trajectories' fretchet distance is less than k only if their first points' distance is less than k and their last points' distance is less than k. So we use two KD-tree to index all trajectories' first and last points. There's an DP algorithm to check whether two trajectories' fretchet distance is less than k. It costs O(nm) to check two trajectories with length n and m. Use DFS to make this DP more quickly. Use multithreading to speedup.
+	Obviously, two trajectories' frechet distance is less than k only if their first points' distance is less than k and their last points' distance is less than k. So we use two KD-tree to index all trajectories' first and last points. There's an DP algorithm to check whether two trajectories' frechet distance is less than k. It costs O(nm) to check two trajectories with length n and m. Use DFS to make this DP more quickly. Use multithreading to speedup.
